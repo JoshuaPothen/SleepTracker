@@ -45,25 +45,26 @@ The server will run on `http://localhost:3000`
 ### 3. ESP32C6 Setup
 
 1. Install the Seeed mmWave library in Arduino IDE:
+   Dowload the library from https://github.com/Love4yzp/Seeed-mmWave-library
    - Go to Sketch → Include Library → Manage Libraries
    - Search "Seeed mmWave" and install
 
-2. Open `esp32-code.ino` in Arduino IDE
+3. Open `esp32-code.ino` in Arduino IDE
 
-3. Update WiFi credentials:
+4. Update WiFi credentials:
    ```cpp
    const char* ssid = "YOUR_WIFI_SSID";
    const char* password = "YOUR_WIFI_PASSWORD";
    ```
 
-4. Update server URL:
+5. Update server URL:
    ```cpp
    const char* serverUrl = "http://YOUR_SERVER_IP:3000/api/sleep-data";
    ```
 
-5. Select board: Tools → Board → esp32 → XIAO_ESP32C6
+6. Select board: Tools → Board → esp32 → XIAO_ESP32C6
 
-6. Upload to your XIAO ESP32C6
+7. Upload to your XIAO ESP32C6
 
 ### 4. For GitHub Pages (Static Hosting)
 
