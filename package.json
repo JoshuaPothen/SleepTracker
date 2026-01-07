@@ -1,0 +1,26 @@
+{
+  "name": "sleep-tracker",
+  "version": "1.0.0",
+  "description": "Sleep tracking website with MR60BHA2 sensor data",
+  "main": "api-server.js",
+  "scripts": {
+    "start": "node api-server.js",
+    "dev": "nodemon api-server.js"
+  },
+  "keywords": [
+    "sleep",
+    "tracking",
+    "mmwave",
+    "sensor",
+    "esp32"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

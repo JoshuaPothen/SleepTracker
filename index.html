@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 1.5s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Background states */
+        body.awake {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body.light-sleep {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        body.deep-sleep {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        body.no-signal {
+            background: linear-gradient(135deg, #757F9A 0%, #D7DDE8 100%);
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-width: 400px;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-indicator {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-text {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .data-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .data-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .data-unit {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .timestamp {
+            margin-top: 30px;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff4444;
+            animation: blink 1s infinite;
+        }
+
+        .status-dot.connected {
+            background: #44ff44;
+            animation: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Breathing animation */
+        .breathing-indicator {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .breath-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .info-footer {
+            margin-top: 40px;
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                min-width: 90%;
+                padding: 20px;
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body class="no-signal">
+    <div class="connection-status">
+        <div class="status-dot" id="connectionDot"></div>
+        <span id="connectionText">Waiting for data...</span>
+    </div>
+
+    <div class="container">
+        <div class="status-indicator" id="statusIcon">
+            💤
+        </div>
+
+        <h1 id="statusTitle">No Signal</h1>
+        <p class="status-text" id="statusDescription">Waiting for sensor data...</p>
+
+        <div class="breathing-indicator" id="breathingIndicator" style="display: none;">
+            <div class="breath-circle"></div>
+        </div>
+
+        <div class="data-grid">
+            <div class="data-card">
+                <div class="data-label">Heart Rate</div>
+                <div class="data-value" id="heartRate">--</div>
+                <div class="data-unit">BPM</div>
+            </div>
+            <div class="data-card">
+                <div class="data-label">Breathing Rate</div>
+                <div class="data-value" id="breathRate">--</div>
+                <div class="data-unit">BPM</div>
+            </div>
+            <div class="data-card">
+                <div class="data-label">Distance</div>
+                <div class="data-value" id="distance">--</div>
+                <div class="data-unit">meters</div>
+            </div>
+            <div class="data-card">
+                <div class="data-label">Sleep Score</div>
+                <div class="data-value" id="sleepScore">--</div>
+                <div class="data-unit">%</div>
+            </div>
+        </div>
+
+        <div class="timestamp">
+            Last updated: <span id="lastUpdate">Never</span>
+        </div>
+
+        <div class="info-footer">
+            Powered by MR60BHA2 60GHz mmWave Sensor
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_ENDPOINT = '/api/sleep-data'; // Adjust this to your API endpoint
+        const UPDATE_INTERVAL = 2000; // 2 seconds
+        
+        // State management
+        let currentState = 'no-signal';
+        let lastDataTime = null;
+        let isConnected = false;
+
+        // DOM elements
+        const elements = {
+            body: document.body,
+            statusIcon: document.getElementById('statusIcon'),
+            statusTitle: document.getElementById('statusTitle'),
+            statusDescription: document.getElementById('statusDescription'),
+            heartRate: document.getElementById('heartRate'),
+            breathRate: document.getElementById('breathRate'),
+            distance: document.getElementById('distance'),
+            sleepScore: document.getElementById('sleepScore'),
+            lastUpdate: document.getElementById('lastUpdate'),
+            connectionDot: document.getElementById('connectionDot'),
+            connectionText: document.getElementById('connectionText'),
+            breathingIndicator: document.getElementById('breathingIndicator')
+        };
+
+        // Sleep state determination logic
+        function determineSleepState(heartRate, breathRate, distance) {
+            // No valid data
+            if (heartRate === 0 && breathRate === 0) {
+                return 'no-signal';
+            }
+
+            // Person too far or not detected
+            if (distance > 1.5 || distance === 0) {
+                return 'awake';
+            }
+
+            // Deep sleep: Low heart rate (40-60 BPM) and low breathing rate (12-16 BPM)
+            if (heartRate >= 40 && heartRate <= 60 && breathRate >= 12 && breathRate <= 16) {
+                return 'deep-sleep';
+            }
+
+            // Light sleep: Moderate heart rate (60-70 BPM) and breathing rate (16-20 BPM)
+            if (heartRate >= 60 && heartRate <= 70 && breathRate >= 16 && breathRate <= 20) {
+                return 'light-sleep';
+            }
+
+            // Awake: Higher heart rate (>70 BPM) or irregular breathing
+            return 'awake';
+        }
+
+        // Calculate sleep score
+        function calculateSleepScore(heartRate, breathRate, distance) {
+            if (heartRate === 0 || breathRate === 0) return 0;
+            
+            let score = 100;
+            
+            // Ideal ranges
+            const idealHeartRate = 55;
+            const idealBreathRate = 14;
+            
+            // Penalize deviation from ideal
+            score -= Math.abs(heartRate - idealHeartRate) * 0.5;
+            score -= Math.abs(breathRate - idealBreathRate) * 2;
+            
+            // Penalize if too far
+            if (distance > 1.0) score -= (distance - 1.0) * 20;
+            
+            return Math.max(0, Math.min(100, Math.round(score)));
+        }
+
+        // Update UI based on state
+        function updateUI(state, data) {
+            const states = {
+                'awake': {
+                    icon: '👁️',
+                    title: 'Awake',
+                    description: 'You appear to be awake',
+                    class: 'awake'
+                },
+                'light-sleep': {
+                    icon: '😴',
+                    title: 'Light Sleep',
+                    description: 'Resting in light sleep',
+                    class: 'light-sleep'
+                },
+                'deep-sleep': {
+                    icon: '💤',
+                    title: 'Deep Sleep',
+                    description: 'In deep, restorative sleep',
+                    class: 'deep-sleep'
+                },
+                'no-signal': {
+                    icon: '📡',
+                    title: 'No Signal',
+                    description: 'No sensor data detected',
+                    class: 'no-signal'
+                }
+            };
+
+            const stateConfig = states[state];
+            
+            // Update body class
+            elements.body.className = stateConfig.class;
+            
+            // Update status
+            elements.statusIcon.textContent = stateConfig.icon;
+            elements.statusTitle.textContent = stateConfig.title;
+            elements.statusDescription.textContent = stateConfig.description;
+            
+            // Update data displays
+            elements.heartRate.textContent = data.heartRate > 0 ? data.heartRate.toFixed(1) : '--';
+            elements.breathRate.textContent = data.breathRate > 0 ? data.breathRate.toFixed(1) : '--';
+            elements.distance.textContent = data.distance > 0 ? data.distance.toFixed(2) : '--';
+            elements.sleepScore.textContent = data.sleepScore > 0 ? data.sleepScore : '--';
+            
+            // Show/hide breathing indicator
+            if (state === 'light-sleep' || state === 'deep-sleep') {
+                elements.breathingIndicator.style.display = 'block';
+                updateBreathingAnimation(data.breathRate);
+            } else {
+                elements.breathingIndicator.style.display = 'none';
+            }
+            
+            // Update timestamp
+            elements.lastUpdate.textContent = new Date().toLocaleTimeString();
+            
+            currentState = state;
+        }
+
+        // Update breathing animation speed
+        function updateBreathingAnimation(breathRate) {
+            if (breathRate > 0) {
+                const duration = 60 / breathRate; // Convert BPM to seconds per breath
+                const breathCircle = document.querySelector('.breath-circle');
+                if (breathCircle) {
+                    breathCircle.style.animation = `breathe ${duration}s ease-in-out infinite`;
+                }
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            elements.connectionDot.className = `status-dot ${connected ? 'connected' : ''}`;
+            elements.connectionText.textContent = connected ? 'Connected' : 'Disconnected';
+        }
+
+        // Fetch data from API or use demo data
+        async function fetchSensorData() {
+            try {
+                const response = await fetch(API_ENDPOINT);
+                if (response.ok) {
+                    const data = await response.json();
+                    updateConnectionStatus(true);
+                    return data;
+                } else {
+                    throw new Error('API request failed');
+                }
+            } catch (error) {
+                // Use demo data if API fails (for testing)
+                console.log('Using demo data:', error.message);
+                updateConnectionStatus(false);
+                return getDemoData();
+            }
+        }
+
+        // Generate demo data for testing
+        function getDemoData() {
+            const now = Date.now();
+            const cycle = (now % 30000) / 30000; // 30-second cycle
+            
+            let heartRate, breathRate;
+            
+            if (cycle < 0.33) {
+                // Awake phase
+                heartRate = 75 + Math.random() * 10;
+                breathRate = 18 + Math.random() * 4;
+            } else if (cycle < 0.66) {
+                // Light sleep phase
+                heartRate = 65 + Math.random() * 5;
+                breathRate = 17 + Math.random() * 2;
+            } else {
+                // Deep sleep phase
+                heartRate = 50 + Math.random() * 5;
+                breathRate = 13 + Math.random() * 2;
+            }
+            
+            return {
+                heartRate: heartRate,
+                breathRate: breathRate,
+                distance: 0.8 + Math.random() * 0.3,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // Main update loop
+        async function updateData() {
+            const rawData = await fetchSensorData();
+            
+            const heartRate = rawData.heartRate || rawData.heart_rate || 0;
+            const breathRate = rawData.breathRate || rawData.breath_rate || 0;
+            const distance = rawData.distance || 0;
+            
+            const state = determineSleepState(heartRate, breathRate, distance);
+            const sleepScore = calculateSleepScore(heartRate, breathRate, distance);
+            
+            const processedData = {
+                heartRate,
+                breathRate,
+                distance,
+                sleepScore
+            };
+            
+            updateUI(state, processedData);
+        }
+
+        // Initialize and start update loop
+        function init() {
+            console.log('Sleep Tracker initialized');
+            updateData();
+            setInterval(updateData, UPDATE_INTERVAL);
+        }
+
+        // Start when page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
