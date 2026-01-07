@@ -29,6 +29,9 @@ A real-time sleep monitoring website powered by the MR60BHA2 60GHz mmWave sensor
 
 ### 2. Local API Server (for testing)
 
+Install node.js on machine, from nodejs.org
+cd 'file location'
+
 ```bash
 # Install dependencies
 npm install
