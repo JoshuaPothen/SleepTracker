@@ -238,36 +238,50 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                justify-content: flex-start;
+                padding-top: 40px;
+            }
+
             .container {
                 padding: 40px 20px;
+                margin-bottom: 20px;
             }
 
             h1 {
-                font-size: 3em;
+                font-size: 2.5em;
             }
 
             .status-text {
-                font-size: 1.5em;
+                font-size: 1.3em;
+                margin-bottom: 30px;
             }
 
             .status-indicator {
                 width: 180px;
                 height: 180px;
                 font-size: 5em;
+                margin-bottom: 30px;
             }
 
             .debug-panel {
-                position: fixed;
+                position: relative;
                 top: auto;
-                bottom: 20px;
-                right: 20px;
-                left: 20px;
-                min-width: auto;
+                right: auto;
+                left: auto;
+                width: calc(100% - 40px);
+                max-width: 400px;
+                margin: 0 auto 40px;
             }
 
             .buzz-button {
                 padding: 15px 40px;
                 font-size: 1.2em;
+                margin-bottom: 40px;
+            }
+
+            .breathing-indicator {
+                margin: -10px auto 20px;
             }
         }
     </style>
