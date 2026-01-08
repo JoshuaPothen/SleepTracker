@@ -20,6 +20,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: relative;
         }
 
         /* Background states */
@@ -42,13 +43,9 @@
         .container {
             text-align: center;
             color: white;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            min-width: 400px;
+            padding: 60px 80px;
             animation: fadeIn 1s ease;
+            max-width: 800px;
         }
 
         @keyframes fadeIn {
@@ -57,107 +54,109 @@
         }
 
         .status-indicator {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 30px;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 40px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3em;
+            font-size: 8em;
             animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
-        }
-
         h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            font-weight: 700;
+            letter-spacing: 2px;
         }
 
         .status-text {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .data-card {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
-        }
-
-        .data-label {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .data-value {
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-
-        .data-unit {
-            font-size: 0.8em;
-            opacity: 0.7;
-        }
-
-        .timestamp {
-            margin-top: 30px;
-            font-size: 0.9em;
-            opacity: 0.7;
-        }
-
-        .connection-status {
+            font-size: 2em;
+            margin-bottom: 50px;
+            opacity: 0.95;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }   margin-bottom: 30px;
+        /* Debug Panel */
+        .debug-panel {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9em;
+            z-index: 100;
+        }
+
+        .debug-panel h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1em;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .debug-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .debug-row:last-child {
+            border-bottom: none;
+        /* Buzz Button */
+        .buzz-button {
+            margin-top: 40px;
+            padding: 20px 60px;
+            font-size: 1.5em;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ff4444;
-            animation: blink 1s infinite;
+        .buzz-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
         }
 
-        .status-dot.connected {
-            background: #44ff44;
-            animation: none;
+        .buzz-button:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
+        .buzz-button.sending {
+            background: rgba(100, 200, 255, 0.5);
         /* Breathing animation */
         .breathing-indicator {
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
+            width: 150px;
+            height: 150px;
+            margin: -20px auto 30px;
             position: relative;
         }
 
@@ -173,6 +172,87 @@
         @keyframes breathe {
             0%, 100% { transform: scale(0.8); opacity: 0.5; }
             50% { transform: scale(1.2); opacity: 0.8; }
+        }   color: #44ff44;
+        }   margin-top: 30px;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .connection-status {
+            position: fixed;
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 3em;
+            }
+
+            .status-text {
+                font-size: 1.5em;
+            }
+
+            .status-indicator {
+                width: 180px;
+                height: 180px;
+                font-size: 5em;
+            }
+
+<body class="no-signal">
+    <!-- Debug Panel -->
+    <div class="debug-panel">
+        <h3>Debug Data</h3>
+        <div class="debug-row">
+            <span class="debug-label">Status</span>
+            <span class="debug-value">
+                <span class="status-dot" id="connectionDot"></span>
+                <span id="connectionText">Waiting...</span>
+            </span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">Heart Rate</span>
+            <span class="debug-value" id="debugHeartRate">-- BPM</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">Breath Rate</span>
+            <span class="debug-value" id="debugBreathRate">-- BPM</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">Distance</span>
+            <span class="debug-value" id="debugDistance">-- m</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">Sleep Score</span>
+            <span class="debug-value" id="debugSleepScore">--%</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">Last Update</span>
+            <span class="debug-value" id="debugLastUpdate">Never</span>
+        </div>
+        <div class="buzz-counter">
+            <div class="buzz-counter-label">Buzz Count</div>
+            <div class="buzz-counter-value" id="buzzCount">0</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="status-indicator" id="statusIcon">
+            💤
+        </div>
+
+        <div class="breathing-indicator" id="breathingIndicator" style="display: none;">
+            <div class="breath-circle"></div>
+        </div>
+
+        <h1 id="statusTitle">No Signal</h1>
+        <p class="status-text" id="statusDescription">Waiting for sensor data...</p>
+
+        <button class="buzz-button" id="buzzButton" onclick="sendBuzzSignal()">
+            💡 Buzz Me
+        </button>
+    </div>  50% { transform: scale(1.2); opacity: 0.8; }
         }
 
         .info-footer {
@@ -186,26 +266,29 @@
                 min-width: 90%;
                 padding: 20px;
             }
+        // State management
+        let currentState = 'no-signal';
+        let lastDataTime = null;
+        let isConnected = false;
+        let buzzCount = 0;
 
-            .data-grid {
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-        }
-    </style>
-</head>
-<body class="no-signal">
-    <div class="connection-status">
-        <div class="status-dot" id="connectionDot"></div>
-        <span id="connectionText">Waiting for data...</span>
-    </div>
-
-    <div class="container">
-        <div class="status-indicator" id="statusIcon">
-            💤
+        // DOM elements
+        const elements = {
+            body: document.body,
+            statusIcon: document.getElementById('statusIcon'),
+            statusTitle: document.getElementById('statusTitle'),
+            statusDescription: document.getElementById('statusDescription'),
+            connectionDot: document.getElementById('connectionDot'),
+            connectionText: document.getElementById('connectionText'),
+            breathingIndicator: document.getElementById('breathingIndicator'),
+            debugHeartRate: document.getElementById('debugHeartRate'),
+            debugBreathRate: document.getElementById('debugBreathRate'),
+            debugDistance: document.getElementById('debugDistance'),
+            debugSleepScore: document.getElementById('debugSleepScore'),
+            debugLastUpdate: document.getElementById('debugLastUpdate'),
+            buzzCount: document.getElementById('buzzCount'),
+            buzzButton: document.getElementById('buzzButton')
+        };  💤
         </div>
 
         <h1 id="statusTitle">No Signal</h1>
@@ -321,24 +404,22 @@
             const idealHeartRate = 55;
             const idealBreathRate = 14;
             
-            // Penalize deviation from ideal
-            score -= Math.abs(heartRate - idealHeartRate) * 0.5;
-            score -= Math.abs(breathRate - idealBreathRate) * 2;
+            // Update debug panel
+            elements.debugHeartRate.textContent = data.heartRate > 0 ? `${data.heartRate.toFixed(1)} BPM` : '-- BPM';
+            elements.debugBreathRate.textContent = data.breathRate > 0 ? `${data.breathRate.toFixed(1)} BPM` : '-- BPM';
+            elements.debugDistance.textContent = data.distance > 0 ? `${data.distance.toFixed(2)} m` : '-- m';
+            elements.debugSleepScore.textContent = data.sleepScore > 0 ? `${data.sleepScore}%` : '--%';
+            elements.debugLastUpdate.textContent = new Date().toLocaleTimeString();
             
-            // Penalize if too far
-            if (distance > 1.0) score -= (distance - 1.0) * 20;
+            // Show/hide breathing indicator
+            if (state === 'light-sleep' || state === 'deep-sleep') {
+                elements.breathingIndicator.style.display = 'block';
+                updateBreathingAnimation(data.breathRate);
+            } else {
+                elements.breathingIndicator.style.display = 'none';
+            }
             
-            return Math.max(0, Math.min(100, Math.round(score)));
-        }
-
-        // Update UI based on state
-        function updateUI(state, data) {
-            const states = {
-                'awake': {
-                    icon: '👁️',
-                    title: 'Awake',
-                    description: 'You appear to be awake',
-                    class: 'awake'
+            currentState = state;'
                 },
                 'light-sleep': {
                     icon: '😴',
@@ -458,15 +539,64 @@
 
         // Main update loop
         async function updateData() {
-            const rawData = await fetchSensorData();
+        // Send buzz signal to ESP32
+        async function sendBuzzSignal() {
+            const button = elements.buzzButton;
             
-            const heartRate = rawData.heartRate || rawData.heart_rate || 0;
-            const breathRate = rawData.breathRate || rawData.breath_rate || 0;
-            const distance = rawData.distance || 0;
-            
-            const state = determineSleepState(heartRate, breathRate, distance);
-            const sleepScore = calculateSleepScore(heartRate, breathRate, distance);
-            
+            try {
+                button.classList.add('sending');
+                button.textContent = '⚡ Buzzing...';
+                
+                const response = await fetch(API_ENDPOINT.replace('/sleep-data', '/buzz'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'buzz' })
+                });
+                
+                if (response.ok) {
+                    buzzCount++;
+                    elements.buzzCount.textContent = buzzCount;
+                    localStorage.setItem('buzzCount', buzzCount);
+                    
+                    button.textContent = '✅ Buzzed!';
+                    setTimeout(() => {
+                        button.textContent = '💡 Buzz Me';
+                        button.classList.remove('sending');
+                    }, 2000);
+                } else {
+                    throw new Error('Buzz failed');
+                }
+            } catch (error) {
+                console.error('Error sending buzz:', error);
+                button.textContent = '❌ Failed';
+                setTimeout(() => {
+                    button.textContent = '💡 Buzz Me';
+                    button.classList.remove('sending');
+                }, 2000);
+            }
+        }
+
+        // Load buzz count from localStorage
+        function loadBuzzCount() {
+            const savedCount = localStorage.getItem('buzzCount');
+            if (savedCount) {
+                buzzCount = parseInt(savedCount);
+                elements.buzzCount.textContent = buzzCount;
+            }
+        }
+
+        // Initialize and start update loop
+        function init() {
+            console.log('Sleep Tracker initialized');
+            loadBuzzCount();
+            updateData();
+            setInterval(updateData, UPDATE_INTERVAL);
+        }
+
+        // Start when page loads
+        window.addEventListener('DOMContentLoaded', init);
             const processedData = {
                 heartRate,
                 breathRate,
