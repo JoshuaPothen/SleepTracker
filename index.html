@@ -71,6 +71,8 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
+        }
+
         h1 {
             font-size: 4.5em;
             margin-bottom: 20px;
@@ -84,7 +86,8 @@
             margin-bottom: 50px;
             opacity: 0.95;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }   margin-bottom: 30px;
+        }
+
         /* Debug Panel */
         .debug-panel {
             position: fixed;
@@ -121,6 +124,38 @@
 
         .debug-row:last-child {
             border-bottom: none;
+        }
+
+        .debug-label {
+            opacity: 0.7;
+            font-size: 0.85em;
+        }
+
+        .debug-value {
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #4facfe;
+        }
+
+        .buzz-counter {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .buzz-counter-label {
+            opacity: 0.7;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .buzz-counter-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #44ff44;
+        }
+
         /* Buzz Button */
         .buzz-button {
             margin-top: 40px;
@@ -152,6 +187,34 @@
 
         .buzz-button.sending {
             background: rgba(100, 200, 255, 0.5);
+            animation: buzzPulse 0.5s ease;
+        }
+
+        @keyframes buzzPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+            display: inline-block;
+            margin-right: 8px;
+            animation: blink 1s infinite;
+        }
+
+        .status-dot.connected {
+            background: #44ff44;
+            animation: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
         /* Breathing animation */
         .breathing-indicator {
             width: 150px;
@@ -172,14 +235,8 @@
         @keyframes breathe {
             0%, 100% { transform: scale(0.8); opacity: 0.5; }
             50% { transform: scale(1.2); opacity: 0.8; }
-        }   color: #44ff44;
-        }   margin-top: 30px;
-            font-size: 0.9em;
-            opacity: 0.7;
         }
 
-        .connection-status {
-            position: fixed;
         @media (max-width: 768px) {
             .container {
                 padding: 40px 20px;
@@ -199,6 +256,22 @@
                 font-size: 5em;
             }
 
+            .debug-panel {
+                position: fixed;
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                min-width: auto;
+            }
+
+            .buzz-button {
+                padding: 15px 40px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
 <body class="no-signal">
     <!-- Debug Panel -->
     <div class="debug-panel">
@@ -252,20 +325,24 @@
         <button class="buzz-button" id="buzzButton" onclick="sendBuzzSignal()">
             💡 Buzz Me
         </button>
-    </div>  50% { transform: scale(1.2); opacity: 0.8; }
-        }
+    </div>
 
-        .info-footer {
-            margin-top: 40px;
-            font-size: 0.8em;
-            opacity: 0.6;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                min-width: 90%;
-                padding: 20px;
-            }
+    <script>
+        // Configuration
+        const VERCEL_API_URL = 'https://sleep-tracker-pi-ten.vercel.app/api/sleep-data';
+        
+        // Automatically detect environment
+        const API_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:3000/api/sleep-data'
+            : window.location.hostname.includes('vercel.app')
+                ? '/api/sleep-data'
+                : VERCEL_API_URL;
+        
+        const UPDATE_INTERVAL = 2000; // 2 seconds
+        
+        console.log('Environment:', window.location.hostname);
+        console.log('API Endpoint:', API_ENDPOINT);
+        
         // State management
         let currentState = 'no-signal';
         let lastDataTime = null;
@@ -288,84 +365,6 @@
             debugLastUpdate: document.getElementById('debugLastUpdate'),
             buzzCount: document.getElementById('buzzCount'),
             buzzButton: document.getElementById('buzzButton')
-        };  💤
-        </div>
-
-        <h1 id="statusTitle">No Signal</h1>
-        <p class="status-text" id="statusDescription">Waiting for sensor data...</p>
-
-        <div class="breathing-indicator" id="breathingIndicator" style="display: none;">
-            <div class="breath-circle"></div>
-        </div>
-
-        <div class="data-grid">
-            <div class="data-card">
-                <div class="data-label">Heart Rate</div>
-                <div class="data-value" id="heartRate">--</div>
-                <div class="data-unit">BPM</div>
-            </div>
-            <div class="data-card">
-                <div class="data-label">Breathing Rate</div>
-                <div class="data-value" id="breathRate">--</div>
-                <div class="data-unit">BPM</div>
-            </div>
-            <div class="data-card">
-                <div class="data-label">Distance</div>
-                <div class="data-value" id="distance">--</div>
-                <div class="data-unit">meters</div>
-            </div>
-            <div class="data-card">
-                <div class="data-label">Sleep Score</div>
-                <div class="data-value" id="sleepScore">--</div>
-                <div class="data-unit">%</div>
-            </div>
-        </div>
-
-        <div class="timestamp">
-            Last updated: <span id="lastUpdate">Never</span>
-        </div>
-
-        <div class="info-footer">
-            Powered by MR60BHA2 60GHz mmWave Sensor
-        </div>
-    </div>
-
-    <script>
-        // Configuration
-        // TODO: Replace YOUR_VERCEL_APP_URL with your actual Vercel deployment URL
-        const VERCEL_API_URL = 'https://sleep-tracker-pi-ten.vercel.app/api/sleep-data';
-        
-        // Automatically detect environment
-        const API_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? 'http://localhost:3000/api/sleep-data'
-            : window.location.hostname.includes('vercel.app')
-                ? '/api/sleep-data'
-                : VERCEL_API_URL;
-        
-        const UPDATE_INTERVAL = 2000; // 2 seconds
-        
-        console.log('Environment:', window.location.hostname);
-        console.log('API Endpoint:', API_ENDPOINT);
-        
-        // State management
-        let currentState = 'no-signal';
-        let lastDataTime = null;
-        let isConnected = false;
-
-        // DOM elements
-        const elements = {
-            body: document.body,
-            statusIcon: document.getElementById('statusIcon'),
-            statusTitle: document.getElementById('statusTitle'),
-            statusDescription: document.getElementById('statusDescription'),
-            heartRate: document.getElementById('heartRate'),
-            breathRate: document.getElementById('breathRate'),
-            distance: document.getElementById('distance'),
-            sleepScore: document.getElementById('sleepScore'),
-            lastUpdate: document.getElementById('lastUpdate'),
-            connectionDot: document.getElementById('connectionDot'),
-            connectionText: document.getElementById('connectionText'),
-            breathingIndicator: document.getElementById('breathingIndicator')
         };
 
         // Sleep state determination logic
@@ -404,22 +403,24 @@
             const idealHeartRate = 55;
             const idealBreathRate = 14;
             
-            // Update debug panel
-            elements.debugHeartRate.textContent = data.heartRate > 0 ? `${data.heartRate.toFixed(1)} BPM` : '-- BPM';
-            elements.debugBreathRate.textContent = data.breathRate > 0 ? `${data.breathRate.toFixed(1)} BPM` : '-- BPM';
-            elements.debugDistance.textContent = data.distance > 0 ? `${data.distance.toFixed(2)} m` : '-- m';
-            elements.debugSleepScore.textContent = data.sleepScore > 0 ? `${data.sleepScore}%` : '--%';
-            elements.debugLastUpdate.textContent = new Date().toLocaleTimeString();
+            // Penalize deviation from ideal
+            score -= Math.abs(heartRate - idealHeartRate) * 0.5;
+            score -= Math.abs(breathRate - idealBreathRate) * 2;
             
-            // Show/hide breathing indicator
-            if (state === 'light-sleep' || state === 'deep-sleep') {
-                elements.breathingIndicator.style.display = 'block';
-                updateBreathingAnimation(data.breathRate);
-            } else {
-                elements.breathingIndicator.style.display = 'none';
-            }
+            // Penalize if too far
+            if (distance > 1.0) score -= (distance - 1.0) * 20;
             
-            currentState = state;'
+            return Math.max(0, Math.min(100, Math.round(score)));
+        }
+
+        // Update UI based on state
+        function updateUI(state, data) {
+            const states = {
+                'awake': {
+                    icon: '👁️',
+                    title: 'Awake',
+                    description: 'You appear to be awake',
+                    class: 'awake'
                 },
                 'light-sleep': {
                     icon: '😴',
@@ -451,11 +452,12 @@
             elements.statusTitle.textContent = stateConfig.title;
             elements.statusDescription.textContent = stateConfig.description;
             
-            // Update data displays
-            elements.heartRate.textContent = data.heartRate > 0 ? data.heartRate.toFixed(1) : '--';
-            elements.breathRate.textContent = data.breathRate > 0 ? data.breathRate.toFixed(1) : '--';
-            elements.distance.textContent = data.distance > 0 ? data.distance.toFixed(2) : '--';
-            elements.sleepScore.textContent = data.sleepScore > 0 ? data.sleepScore : '--';
+            // Update debug panel
+            elements.debugHeartRate.textContent = data.heartRate > 0 ? `${data.heartRate.toFixed(1)} BPM` : '-- BPM';
+            elements.debugBreathRate.textContent = data.breathRate > 0 ? `${data.breathRate.toFixed(1)} BPM` : '-- BPM';
+            elements.debugDistance.textContent = data.distance > 0 ? `${data.distance.toFixed(2)} m` : '-- m';
+            elements.debugSleepScore.textContent = data.sleepScore > 0 ? `${data.sleepScore}%` : '--%';
+            elements.debugLastUpdate.textContent = new Date().toLocaleTimeString();
             
             // Show/hide breathing indicator
             if (state === 'light-sleep' || state === 'deep-sleep') {
@@ -464,9 +466,6 @@
             } else {
                 elements.breathingIndicator.style.display = 'none';
             }
-            
-            // Update timestamp
-            elements.lastUpdate.textContent = new Date().toLocaleTimeString();
             
             currentState = state;
         }
@@ -539,6 +538,25 @@
 
         // Main update loop
         async function updateData() {
+            const rawData = await fetchSensorData();
+            
+            const heartRate = rawData.heartRate || rawData.heart_rate || 0;
+            const breathRate = rawData.breathRate || rawData.breath_rate || 0;
+            const distance = rawData.distance || 0;
+            
+            const state = determineSleepState(heartRate, breathRate, distance);
+            const sleepScore = calculateSleepScore(heartRate, breathRate, distance);
+            
+            const processedData = {
+                heartRate,
+                breathRate,
+                distance,
+                sleepScore
+            };
+            
+            updateUI(state, processedData);
+        }
+
         // Send buzz signal to ESP32
         async function sendBuzzSignal() {
             const button = elements.buzzButton;
@@ -591,25 +609,6 @@
         function init() {
             console.log('Sleep Tracker initialized');
             loadBuzzCount();
-            updateData();
-            setInterval(updateData, UPDATE_INTERVAL);
-        }
-
-        // Start when page loads
-        window.addEventListener('DOMContentLoaded', init);
-            const processedData = {
-                heartRate,
-                breathRate,
-                distance,
-                sleepScore
-            };
-            
-            updateUI(state, processedData);
-        }
-
-        // Initialize and start update loop
-        function init() {
-            console.log('Sleep Tracker initialized');
             updateData();
             setInterval(updateData, UPDATE_INTERVAL);
         }
