@@ -329,7 +329,7 @@
 
     <script>
         // Configuration
-        const VERCEL_API_URL = 'https://sleep-tracker-pi-ten.vercel.app/api/sleep-data';
+        const VERCEL_API_URL = 'https://joshua-sleep-tracker.vercel.app/api/sleep-data';
         
         // Automatically detect environment
         const API_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
@@ -419,25 +419,25 @@
                 'awake': {
                     icon: '👁️',
                     title: 'Awake',
-                    description: 'You appear to be awake',
+                    description: 'Joshua appears to be awake',
                     class: 'awake'
                 },
                 'light-sleep': {
                     icon: '😴',
                     title: 'Light Sleep',
-                    description: 'Resting in light sleep',
+                    description: 'Joshua is almost asleep',
                     class: 'light-sleep'
                 },
                 'deep-sleep': {
                     icon: '💤',
                     title: 'Deep Sleep',
-                    description: 'In deep, restorative sleep',
+                    description: 'Joshua is fast asleep, do not disturb',
                     class: 'deep-sleep'
                 },
                 'no-signal': {
                     icon: '📡',
                     title: 'No Signal',
-                    description: 'No sensor data detected',
+                    description: 'Joshua is Offline',
                     class: 'no-signal'
                 }
             };
