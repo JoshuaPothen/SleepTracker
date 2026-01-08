@@ -249,11 +249,20 @@
 
     <script>
         // Configuration
-        // Automatically detect if running on Vercel or locally
+        // TODO: Replace YOUR_VERCEL_APP_URL with your actual Vercel deployment URL
+        const VERCEL_API_URL = 'https://sleep-tracker-pi-ten.vercel.app/api/sleep-data';
+        
+        // Automatically detect environment
         const API_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
             ? 'http://localhost:3000/api/sleep-data'
-            : '/api/sleep-data';
+            : window.location.hostname.includes('vercel.app')
+                ? '/api/sleep-data'
+                : VERCEL_API_URL;
+        
         const UPDATE_INTERVAL = 2000; // 2 seconds
+        
+        console.log('Environment:', window.location.hostname);
+        console.log('API Endpoint:', API_ENDPOINT);
         
         // State management
         let currentState = 'no-signal';
