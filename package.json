@@ -2,10 +2,10 @@
   "name": "sleep-tracker",
   "version": "1.0.0",
   "description": "Sleep tracking website with MR60BHA2 sensor data",
-  "main": "api-server.js",
+  "main": "index.html",
   "scripts": {
-    "start": "node api-server.js",
-    "dev": "nodemon api-server.js"
+    "dev": "vercel dev",
+    "start": "node api-server.js"
   },
   "keywords": [
     "sleep",
@@ -14,13 +14,14 @@
     "sensor",
     "esp32"
   ],
-  "author": "",
+  "author": "Joshua Pothen",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "vercel": "^33.0.0"
   }
 }
