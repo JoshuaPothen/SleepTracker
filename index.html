@@ -249,7 +249,10 @@
 
     <script>
         // Configuration
-        const API_ENDPOINT = '/api/sleep-data'; // Adjust this to your API endpoint
+        // Automatically detect if running on Vercel or locally
+        const API_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:3000/api/sleep-data'
+            : '/api/sleep-data';
         const UPDATE_INTERVAL = 2000; // 2 seconds
         
         // State management
