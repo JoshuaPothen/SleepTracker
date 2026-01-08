@@ -348,6 +348,7 @@
         let lastDataTime = null;
         let isConnected = false;
         let buzzCount = 0;
+        let lastLoggedState = null;
 
         // DOM elements
         const elements = {
@@ -555,6 +556,44 @@
             };
             
             updateUI(state, processedData);
+            
+            // Log state change if different from last logged state
+            if (state !== lastLoggedState) {
+                logEvent('state_change', {
+                    from: lastLoggedState,
+                    to: state,
+                    heartRate: heartRate,
+                    breathRate: breathRate,
+                    distance: distance,
+                    sleepScore: sleepScore
+                });
+                lastLoggedState = state;
+            }
+        }
+
+        // Log event to backend
+        async function logEvent(type, data) {
+            try {
+                const response = await fetch(API_ENDPOINT.replace('/sleep-data', '/logs'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        data: data,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log(`Event logged: ${type}`, data);
+                } else {
+                    console.warn('Failed to log event');
+                }
+            } catch (error) {
+                console.error('Error logging event:', error);
+            }
         }
 
         // Send buzz signal to ESP32
@@ -577,6 +616,12 @@
                     buzzCount++;
                     elements.buzzCount.textContent = buzzCount;
                     localStorage.setItem('buzzCount', buzzCount);
+                    
+                    // Log buzz event
+                    logEvent('buzz', {
+                        count: buzzCount,
+                        currentState: currentState
+                    });
                     
                     button.textContent = '✅ Buzzed!';
                     setTimeout(() => {

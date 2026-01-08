@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Tracker - Event Logs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        select, button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            opacity: 0.8;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .log-entry.buzz {
+            border-left-color: #ff6b6b;
+        }
+
+        .log-entry.state_change {
+            border-left-color: #51cf66;
+        }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-type {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .log-data {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .log-timestamp {
+            font-size: 0.85em;
+            opacity: 0.6;
+            white-space: nowrap;
+            margin-left: 20px;
+        }
+
+        .no-logs {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.6;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Sleep Tracker Event Logs</h1>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Events</div>
+                <div class="stat-value" id="totalEvents">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Buzz Events</div>
+                <div class="stat-value" id="buzzEvents">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">State Changes</div>
+                <div class="stat-value" id="stateChanges">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Last Update</div>
+                <div class="stat-value" id="lastUpdate" style="font-size: 1.5em;">Never</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Filter by Type</label>
+                <select id="filterType" onchange="loadLogs()">
+                    <option value="">All Events</option>
+                    <option value="buzz">Buzz Events</option>
+                    <option value="state_change">State Changes</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Limit</label>
+                <select id="limitSelect" onchange="loadLogs()">
+                    <option value="50">Last 50</option>
+                    <option value="100" selected>Last 100</option>
+                    <option value="200">Last 200</option>
+                    <option value="500">Last 500</option>
+                    <option value="1000">Last 1000</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button onclick="loadLogs()">🔄 Refresh</button>
+            </div>
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button onclick="downloadLogs()">💾 Download JSON</button>
+            </div>
+        </div>
+
+        <div class="log-container" id="logContainer">
+            <div class="no-logs">Loading logs...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://sleep-tracker-pi-ten.vercel.app/api/logs';
+        let allLogs = [];
+
+        async function loadLogs() {
+            const filterType = document.getElementById('filterType').value;
+            const limit = document.getElementById('limitSelect').value;
+            
+            try {
+                let url = `${API_URL}?limit=${limit}`;
+                if (filterType) {
+                    url += `&type=${filterType}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                allLogs = data.events || [];
+                displayLogs(allLogs);
+                updateStats(allLogs);
+                
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                document.getElementById('logContainer').innerHTML = 
+                    '<div class="no-logs">❌ Error loading logs</div>';
+            }
+        }
+
+        function displayLogs(logs) {
+            const container = document.getElementById('logContainer');
+            
+            if (logs.length === 0) {
+                container.innerHTML = '<div class="no-logs">No logs found</div>';
+                return;
+            }
+            
+            // Reverse to show newest first
+            const reversedLogs = [...logs].reverse();
+            
+            container.innerHTML = reversedLogs.map(log => {
+                const date = new Date(log.timestamp);
+                const formattedDate = date.toLocaleString();
+                
+                let dataHTML = '';
+                if (log.type === 'buzz') {
+                    dataHTML = `
+                        <div class="log-data">Count: ${log.data.count}</div>
+                        <div class="log-data">During: ${log.data.currentState}</div>
+                    `;
+                } else if (log.type === 'state_change') {
+                    dataHTML = `
+                        <div class="log-data">From: ${log.data.from || 'N/A'} → To: ${log.data.to}</div>
+                        <div class="log-data">Heart Rate: ${log.data.heartRate?.toFixed(1) || 'N/A'} BPM</div>
+                        <div class="log-data">Breath Rate: ${log.data.breathRate?.toFixed(1) || 'N/A'} BPM</div>
+                        <div class="log-data">Distance: ${log.data.distance?.toFixed(2) || 'N/A'} m</div>
+                        <div class="log-data">Sleep Score: ${log.data.sleepScore || 'N/A'}%</div>
+                    `;
+                }
+                
+                return `
+                    <div class="log-entry ${log.type}">
+                        <div class="log-content">
+                            <div class="log-type">${log.type.replace('_', ' ')}</div>
+                            ${dataHTML}
+                        </div>
+                        <div class="log-timestamp">${formattedDate}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats(logs) {
+            const totalEvents = logs.length;
+            const buzzEvents = logs.filter(l => l.type === 'buzz').length;
+            const stateChanges = logs.filter(l => l.type === 'state_change').length;
+            
+            document.getElementById('totalEvents').textContent = totalEvents;
+            document.getElementById('buzzEvents').textContent = buzzEvents;
+            document.getElementById('stateChanges').textContent = stateChanges;
+            
+            if (logs.length > 0) {
+                const lastLog = logs[logs.length - 1];
+                const lastDate = new Date(lastLog.timestamp);
+                document.getElementById('lastUpdate').textContent = lastDate.toLocaleTimeString();
+            }
+        }
+
+        function downloadLogs() {
+            const dataStr = JSON.stringify({ events: allLogs }, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `sleep-tracker-logs-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Load logs on page load
+        loadLogs();
+        
+        // Auto-refresh every 10 seconds
+        setInterval(loadLogs, 10000);
+    </script>
+</body>
+</html>
