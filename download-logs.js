@@ -4,7 +4,7 @@
 const fs = require('fs');
 const https = require('https');
 
-const API_URL = 'https://sleep-tracker-pi-ten.vercel.app/api/logs?limit=1000';
+const API_URL = 'https://joshua-sleep-tracker.vercel.app/logs?limit=1000';
 const LOG_FILE = './sleep-tracker-logs.json';
 
 function downloadLogs() {
