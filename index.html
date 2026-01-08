@@ -19,7 +19,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
         }
 
@@ -240,12 +241,14 @@
         @media (max-width: 768px) {
             body {
                 justify-content: flex-start;
-                padding-top: 40px;
+                padding-top: 20px;
+                padding-bottom: 20px;
             }
 
             .container {
                 padding: 40px 20px;
-                margin-bottom: 20px;
+                margin-bottom: 0;
+                order: 1;
             }
 
             h1 {
@@ -265,19 +268,20 @@
             }
 
             .debug-panel {
-                position: relative;
-                top: auto;
-                right: auto;
-                left: auto;
+                position: relative !important;
+                top: auto !important;
+                right: auto !important;
+                left: auto !important;
                 width: calc(100% - 40px);
                 max-width: 400px;
-                margin: 0 auto 40px;
+                margin: 20px auto 40px;
+                order: 2;
             }
 
             .buzz-button {
                 padding: 15px 40px;
                 font-size: 1.2em;
-                margin-bottom: 40px;
+                margin-bottom: 30px;
             }
 
             .breathing-indicator {
@@ -287,6 +291,24 @@
     </style>
 </head>
 <body class="no-signal">
+    <!-- Main Content -->
+    <div class="container">
+        <div class="status-indicator" id="statusIcon">
+            💤
+        </div>
+
+        <div class="breathing-indicator" id="breathingIndicator" style="display: none;">
+            <div class="breath-circle"></div>
+        </div>
+
+        <h1 id="statusTitle">No Signal</h1>
+        <p class="status-text" id="statusDescription">Waiting for sensor data...</p>
+
+        <button class="buzz-button" id="buzzButton" onclick="sendBuzzSignal()">
+            💡 Buzz Me
+        </button>
+    </div>
+
     <!-- Debug Panel -->
     <div class="debug-panel">
         <h3>Debug Data</h3>
@@ -321,24 +343,6 @@
             <div class="buzz-counter-label">Buzz Count</div>
             <div class="buzz-counter-value" id="buzzCount">0</div>
         </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="container">
-        <div class="status-indicator" id="statusIcon">
-            💤
-        </div>
-
-        <div class="breathing-indicator" id="breathingIndicator" style="display: none;">
-            <div class="breath-circle"></div>
-        </div>
-
-        <h1 id="statusTitle">No Signal</h1>
-        <p class="status-text" id="statusDescription">Waiting for sensor data...</p>
-
-        <button class="buzz-button" id="buzzButton" onclick="sendBuzzSignal()">
-            💡 Buzz Me
-        </button>
     </div>
 
     <script>
